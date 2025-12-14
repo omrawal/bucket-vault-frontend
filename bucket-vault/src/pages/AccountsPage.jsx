@@ -1,14 +1,50 @@
-import React from 'react';
-const mockAccounts = [
-  { name: 'HDFC Savings', type: 'Bank', bucket: 'Safety', balance: 250000 },
-  { name: 'Zerodha Equity', type: 'DMAT', bucket: 'Growth', balance: 400000 },
-  { name: 'ICICI FD', type: 'Bank', bucket: 'Safety', balance: 150000 },
-];
+import React, { useState, useEffect } from 'react';
+import { API_URLS } from '../api/urls.js';
+import CreateAccountModal from '../ui/CreateAccountModal.jsx';
 
 function AccountsPage() {
+  const [accounts, setAccounts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    fetchAccounts();
+  }, []);
+
+  const fetchAccounts = async () => {
+    try {
+      const res = await fetch(API_URLS.accounts, {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setAccounts(data);
+      } else {
+        setError('Failed to fetch accounts.');
+      }
+    } catch (err) {
+      setError('Unable to reach server.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  if (loading) return <div className="page"><p>Loading accounts...</p></div>;
+  if (error) return <div className="page"><p className="auth-error">{error}</p></div>;
+
   return (
     <div className="page">
-      <h2 className="page-title">Accounts</h2>
+      <div className="page-header">
+        <h2 className="page-title">Accounts</h2>
+        <button
+          className="btn-primary"
+          onClick={() => setIsModalOpen(true)}
+        >
+          + New Account
+        </button>
+      </div>
       <div className="panel">
         <table className="table">
           <thead>
@@ -20,7 +56,7 @@ function AccountsPage() {
             </tr>
           </thead>
           <tbody>
-            {mockAccounts.map((acc, index) => (
+            {accounts.map((acc, index) => (
               <tr key={index}>
                 <td>{acc.name}</td>
                 <td>{acc.type}</td>
@@ -33,6 +69,12 @@ function AccountsPage() {
           </tbody>
         </table>
       </div>
+
+      <CreateAccountModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={fetchAccounts}
+      />
     </div>
   );
 }
