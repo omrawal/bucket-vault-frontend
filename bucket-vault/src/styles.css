@@ -680,3 +680,16 @@ body {
 .page-title {
   margin: 0;
 }
+
+/* safe theming: don't touch .modal-dialog positioning */
+.modal-content {
+  background-color: #020617;
+  border-radius: 16px;
+  border: 1px solid #1f2937;
+  color: #e5e7eb;
+}
+
+.modal-header,
+.modal-footer {
+  border-color: #1f2937;
+}

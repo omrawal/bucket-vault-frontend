@@ -15,16 +15,17 @@ function PortfolioSelector() {
   const fetchPortfolios = async () => {
     try {
       setLoading(true);
-      const res = await fetch(API_URLS.portfolios, {
+      const res = await fetch(API_URLS.get_portfolio_list, {
         credentials: 'include',
       });
 
       if (res.ok) {
         const data = await res.json();
         setPortfolios(data);
+        console.log('Fetched portfolios:', data);
         // Auto-select first portfolio if available
         if (data.length > 0 && !selectedPortfolio) {
-          setSelectedPortfolio(data[0].portfolio_id);
+          setSelectedPortfolio(data[0].id);
         }
       }
     } catch (err) {
@@ -50,7 +51,7 @@ function PortfolioSelector() {
       >
         <option value="">Select a portfolio</option>
         {portfolios.map((portfolio) => (
-          <option key={portfolio.portfolio_id} value={portfolio.portfolio_id}>
+          <option key={portfolio.id} value={portfolio.id}>
             {portfolio.name}
           </option>
         ))}

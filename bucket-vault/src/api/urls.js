@@ -7,8 +7,8 @@ export const API_URLS = {
   logout: `${API_BASE}/logout/`,
 
   // Portfolio endpoints
-  portfolios: `${API_BASE}/portfolios/`,
-  create_portfolio: `${API_BASE}/portfolios/create/`,
+  get_portfolio_list: `${API_BASE}/get-portfolio-list/`,
+  create_portfolio: `${API_BASE}/create-portfolio/`,
 
   // Account endpoints
   accounts: `${API_BASE}/accounts/`,

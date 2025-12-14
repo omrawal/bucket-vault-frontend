@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
 import { API_URLS } from '../api/urls.js';
 
 function CreatePortfolioModal({ isOpen, onClose, onSuccess }) {
@@ -33,6 +35,7 @@ function CreatePortfolioModal({ isOpen, onClose, onSuccess }) {
       if (res.ok) {
         onSuccess();
         setFormData({ name: '', description: '' });
+        onClose();
       } else {
         setError('Failed to create portfolio.');
       }
@@ -43,22 +46,27 @@ function CreatePortfolioModal({ isOpen, onClose, onSuccess }) {
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>Create New Portfolio</h2>
-          <button className="modal-close" onClick={onClose}>×</button>
-        </div>
+    <Modal
+      show={isOpen}
+      onHide={onClose}
+      centered
+      backdrop={submitting ? 'static' : true}
+      keyboard={!submitting}
+    >
+      <Modal.Header closeButton={!submitting}>
+        <Modal.Title>Create New Portfolio</Modal.Title>
+      </Modal.Header>
 
-        <form onSubmit={handleSubmit} className="modal-body">
-          <div className="form-group">
-            <label htmlFor="name" className="form-label">Portfolio Name</label>
+      <form onSubmit={handleSubmit}>
+        <Modal.Body>
+          <div className="mb-3">
+            <label htmlFor="name" className="form-label">
+              Portfolio Name
+            </label>
             <input
               id="name"
-              className="form-input"
+              className="form-control"
               type="text"
               name="name"
               value={formData.name}
@@ -68,11 +76,13 @@ function CreatePortfolioModal({ isOpen, onClose, onSuccess }) {
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="description" className="form-label">Description (Optional)</label>
+          <div className="mb-3">
+            <label htmlFor="description" className="form-label">
+              Description (Optional)
+            </label>
             <textarea
               id="description"
-              className="form-input"
+              className="form-control"
               name="description"
               value={formData.description}
               onChange={handleChange}
@@ -81,28 +91,28 @@ function CreatePortfolioModal({ isOpen, onClose, onSuccess }) {
             />
           </div>
 
-          {error && <p className="auth-error">{error}</p>}
+          {error && <p className="text-danger small mb-0">{error}</p>}
+        </Modal.Body>
 
-          <div className="modal-footer">
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={onClose}
-              disabled={submitting}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="btn-primary"
-              disabled={submitting}
-            >
-              {submitting ? 'Creating...' : 'Create Portfolio'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={onClose}
+            disabled={submitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={submitting}
+          >
+            {submitting ? 'Creating...' : 'Create Portfolio'}
+          </Button>
+        </Modal.Footer>
+      </form>
+    </Modal>
   );
 }
 
