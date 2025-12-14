@@ -693,3 +693,53 @@ body {
 .modal-footer {
   border-color: #1f2937;
 }
+
+/* Floating label container */
+.floating-field {
+  position: relative;
+}
+
+/* Base input selects already styled:
+   .form-input, .portfolio-select
+   just ensure they have padding-top to make space for label */
+.form-input,
+.portfolio-select {
+  padding-top: 14px; /* extra space for label when floated */
+}
+
+/* Floating label */
+.floating-label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  color: var(--muted);
+  pointer-events: none;
+  transition:
+    transform 0.15s ease,
+    top 0.15s ease,
+    font-size 0.15s ease,
+    color 0.15s ease;
+  background: transparent;
+}
+
+/* Label when floating above input border */
+.floating-label--active {
+  top: 2px;
+  transform: translateY(0);
+  font-size: 0.65rem;
+  padding: 0 4px;
+  background: #020617; /* matches dark input bg so text cuts into border */
+  color: var(--muted);
+}
+
+/* Optional disabled style */
+.floating-label--disabled {
+  color: #4b5563;
+}
+
+.floating-required {
+  margin-left: 2px;
+  color: #f97373;
+}

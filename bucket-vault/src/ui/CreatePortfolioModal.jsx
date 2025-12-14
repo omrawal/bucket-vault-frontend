@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { API_URLS } from '../api/urls.js';
+import FormField from './FormField.jsx';
 
 function CreatePortfolioModal({ isOpen, onClose, onSuccess }) {
   const [formData, setFormData] = useState({
@@ -61,33 +62,29 @@ function CreatePortfolioModal({ isOpen, onClose, onSuccess }) {
       <form onSubmit={handleSubmit}>
         <Modal.Body>
           <div className="mb-3">
-            <label htmlFor="name" className="form-label">
-              Portfolio Name
-            </label>
-            <input
-              id="name"
-              className="form-control"
+            <FormField
               type="text"
               name="name"
+              label="Portfolio Name"
               value={formData.name}
-              onChange={handleChange}
-              placeholder="e.g., My Investment Portfolio"
+              onChange={(val) =>
+                setFormData((prev) => ({ ...prev, name: val }))
+              }
+              // placeholder="e.g., My Investment Portfolio"
               required
             />
           </div>
 
           <div className="mb-3">
-            <label htmlFor="description" className="form-label">
-              Description (Optional)
-            </label>
-            <textarea
-              id="description"
-              className="form-control"
+            <FormField
+              type="textarea"
               name="description"
+              label="Description (Optional)"
               value={formData.description}
-              onChange={handleChange}
-              placeholder="Add a description for this portfolio"
-              rows="3"
+              onChange={(val) =>
+                setFormData((prev) => ({ ...prev, description: val }))
+              }
+              // placeholder="Add a description for this portfolio"
             />
           </div>
 
