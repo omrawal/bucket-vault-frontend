@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { API_URLS } from '../api/urls.js';
+import { usePortfolio } from '../context/PortfolioContext.jsx';
+import Button from './Button.jsx';
 
 function CreateAccountModal({ isOpen, onClose, onSuccess }) {
+  const { selectedPortfolio } = usePortfolio();
   const [accountTypes, setAccountTypes] = useState([]);
   const [categories, setCategories] = useState([]);
   const [buckets, setBuckets] = useState([]);
@@ -33,10 +36,12 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
   const fetchDropdownData = async () => {
     try {
       setLoading(true);
+      const portfolioId = selectedPortfolio || '';
+      const params = new URLSearchParams({ portfolio_id: portfolioId });
       const [typesRes, categoriesRes, bucketsRes] = await Promise.all([
-        fetch(API_URLS.account_types, { credentials: 'include' }),
-        fetch(API_URLS.categories, { credentials: 'include' }),
-        fetch(API_URLS.buckets, { credentials: 'include' }),
+        fetch(`${API_URLS.get_account_types}?${params}`, { credentials: 'include' }),
+        fetch(`${API_URLS.get_account_categories}?${params}`, { credentials: 'include' }),
+        fetch(`${API_URLS.get_bucket_types}?${params}`, { credentials: 'include' }),
       ]);
 
       if (typesRes.ok && categoriesRes.ok && bucketsRes.ok) {
@@ -74,7 +79,7 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
       if (res.ok) {
         const data = await res.json();
         setAccountTypes([...accountTypes, data]);
-        setFormData((prev) => ({ ...prev, account_type_id: data.account_type_id }));
+        setFormData((prev) => ({ ...prev, account_type_id: data.id }));
         setNewType('');
         setShowNewType(false);
         setError('');
@@ -111,7 +116,7 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
       if (res.ok) {
         const data = await res.json();
         setCategories([...categories, data]);
-        setFormData((prev) => ({ ...prev, category_id: data.category_id }));
+        setFormData((prev) => ({ ...prev, category_id: data.id }));
         setNewCategory('');
         setShowNewCategory(false);
         setError('');
@@ -140,7 +145,7 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
       if (res.ok) {
         const data = await res.json();
         setBuckets([...buckets, data]);
-        setFormData((prev) => ({ ...prev, bucket_id: data.bucket_id }));
+        setFormData((prev) => ({ ...prev, bucket_id: data.id }));
         setNewBucket('');
         setShowNewBucket(false);
         setError('');
@@ -171,6 +176,7 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
+          portfolio_id: selectedPortfolio,
           name: formData.name,
           category_id: parseInt(formData.category_id),
           bucket_id: parseInt(formData.bucket_id),
@@ -232,7 +238,7 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
                 >
                   <option value="">Select account type</option>
                   {accountTypes.map((type) => (
-                    <option key={type.account_type_id} value={type.account_type_id}>
+                    <option key={type.id} value={type.id}>
                       {type.name}
                     </option>
                   ))}
@@ -289,7 +295,7 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
                 >
                   <option value="">Select category</option>
                   {categories.map((cat) => (
-                    <option key={cat.category_id} value={cat.category_id}>
+                    <option key={cat.id} value={cat.id}>
                       {cat.name}
                     </option>
                   ))}
@@ -346,7 +352,7 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
                 >
                   <option value="">Select bucket</option>
                   {buckets.map((bucket) => (
-                    <option key={bucket.bucket_id} value={bucket.bucket_id}>
+                    <option key={bucket.id} value={bucket.id}>
                       {bucket.name}
                     </option>
                   ))}
@@ -393,21 +399,21 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
             {error && <p className="auth-error">{error}</p>}
 
             <div className="modal-footer">
-              <button
+              <Button
+                variant="secondary"
                 type="button"
-                className="btn-secondary"
                 onClick={onClose}
                 disabled={submitting}
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="primary"
                 type="submit"
-                className="btn-primary"
                 disabled={submitting}
               >
                 {submitting ? 'Creating...' : 'Create Account'}
-              </button>
+              </Button>
             </div>
           </form>
         )}

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
 import { API_URLS } from '../api/urls.js';
 import FormField from './FormField.jsx';
+import Button from './Button.jsx';
 
 function CreatePortfolioModal({ isOpen, onClose, onSuccess }) {
   const [formData, setFormData] = useState({

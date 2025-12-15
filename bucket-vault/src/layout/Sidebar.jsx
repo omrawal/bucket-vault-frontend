@@ -1,6 +1,17 @@
 import { FiPieChart, FiLayers, FiList } from 'react-icons/fi';
 import React from 'react';
-function Sidebar({ current, onNavigate }) {
+import { useLocation, useNavigate } from 'react-router-dom';
+
+function Sidebar() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const isActive = (path) => {
+    if (path === '/' && location.pathname === '/') return true;
+    if (path !== '/' && location.pathname.startsWith(path)) return true;
+    return false;
+  };
+
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
@@ -9,22 +20,22 @@ function Sidebar({ current, onNavigate }) {
       </div>
       <nav className="sidebar-nav">
         <button
-          className={`nav-item ${current === 'dashboard' ? 'active' : ''}`}
-          onClick={() => onNavigate('dashboard')}
+          className={`nav-item ${isActive('/') ? 'active' : ''}`}
+          onClick={() => navigate('/')}
         >
           <FiPieChart className="nav-icon" />
           <span>Dashboard</span>
         </button>
         <button
-          className={`nav-item ${current === 'accounts' ? 'active' : ''}`}
-          onClick={() => onNavigate('accounts')}
+          className={`nav-item ${isActive('/accounts') ? 'active' : ''}`}
+          onClick={() => navigate('/accounts')}
         >
           <FiLayers className="nav-icon" />
           <span>Accounts</span>
         </button>
         <button
-          className={`nav-item ${current === 'transactions' ? 'active' : ''}`}
-          onClick={() => onNavigate('transactions')}
+          className={`nav-item ${isActive('/transactions') ? 'active' : ''}`}
+          onClick={() => navigate('/transactions')}
         >
           <FiList className="nav-icon" />
           <span>Transactions</span>

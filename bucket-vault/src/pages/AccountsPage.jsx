@@ -1,20 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { API_URLS } from '../api/urls.js';
+import { usePortfolio } from '../context/PortfolioContext.jsx';
 import CreateAccountModal from '../ui/CreateAccountModal.jsx';
+import Button from '../ui/Button.jsx';
 
 function AccountsPage() {
+  const { selectedPortfolio } = usePortfolio();
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    fetchAccounts();
-  }, []);
+    if (selectedPortfolio) {
+      fetchAccounts();
+    }
+  }, [selectedPortfolio]);
 
   const fetchAccounts = async () => {
     try {
-      const res = await fetch(API_URLS.accounts, {
+      setLoading(true);
+      const params = new URLSearchParams({ portfolio_id: selectedPortfolio });
+      const res = await fetch(`${API_URLS.get_all_accounts}?${params}`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -38,12 +45,13 @@ function AccountsPage() {
     <div className="page">
       <div className="page-header">
         <h2 className="page-title">Accounts</h2>
-        <button
-          className="btn-primary"
+        <Button
+          variant="primary"
           onClick={() => setIsModalOpen(true)}
+          disabled={loading}
         >
           + New Account
-        </button>
+        </Button>
       </div>
       <div className="panel">
         <table className="table">
@@ -56,16 +64,24 @@ function AccountsPage() {
             </tr>
           </thead>
           <tbody>
-            {accounts.map((acc, index) => (
-              <tr key={index}>
-                <td>{acc.name}</td>
-                <td>{acc.type}</td>
-                <td>{acc.bucket}</td>
-                <td className="text-right">
-                  {acc.balance.toLocaleString('en-IN')}
+            {accounts.length === 0 ? (
+              <tr>
+                <td colSpan="4" style={{ textAlign: 'center', padding: '32px', color: 'var(--muted)' }}>
+                  No accounts created
                 </td>
               </tr>
-            ))}
+            ) : (
+              accounts.map((acc, index) => (
+                <tr key={index}>
+                  <td>{acc.name}</td>
+                  <td>{acc.category}</td>
+                  <td>{acc.bucket}</td>
+                  <td className="text-right">
+                    {acc.balance.toLocaleString('en-IN')}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

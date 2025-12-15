@@ -9,16 +9,16 @@ export const API_URLS = {
   // Portfolio endpoints
   get_portfolio_list: `${API_BASE}/get-portfolio-list/`,
   create_portfolio: `${API_BASE}/create-portfolio/`,
+  delete_portfolio: `${API_BASE}/delete-portfolio/`,
 
   // Account endpoints
-  accounts: `${API_BASE}/accounts/`,
-  transactions: `${API_BASE}/transactions/`,
+  get_all_accounts: `${API_BASE}/get-all-accounts/`,
+  // transactions: `${API_BASE}/transactions/`,
   create_account: `${API_BASE}/create-account/`,
-  
-  // Dropdown data endpoints
-  account_types: `${API_BASE}/account-types/`,
-  categories: `${API_BASE}/categories/`,
-  buckets: `${API_BASE}/buckets/`,
+  get_account_types: `${API_BASE}/get-account-types/`,
+
+  get_account_categories: `${API_BASE}/get-account-categories/`,
+  get_bucket_types: `${API_BASE}/get-bucket-types/`,
   
   // Create new endpoints
   create_account_type: `${API_BASE}/account-types/create/`,

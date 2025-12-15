@@ -1,26 +1,44 @@
 import React from 'react';
-import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './layout/Sidebar.jsx';
 import Topbar from './layout/Topbar.jsx';
-import { ROUTES } from './routes.js';
+import DashboardPage from './pages/DashboardPage.jsx';
+import AccountsPage from './pages/AccountsPage.jsx';
+import TransactionsPage from './pages/TransactionsPage.jsx';
+import LoginPage from './pages/LoginPage.jsx';
+import RegisterPage from './pages/RegisterPage.jsx';
+import { PortfolioProvider } from './context/PortfolioContext.jsx';
 import './styles.css';
 
 function App() {
-  const [route, setRoute] = useState('dashboard');
-
-  const CurrentPage = ROUTES[route]?.component;
-  const isAuthRoute = ROUTES[route]?.isAuth;
-
   return (
-    <div className="app-root">
-      <Sidebar current={route} onNavigate={setRoute} />
-      <div className="app-main">
-        <Topbar />
-        <main className="app-content">
-          <CurrentPage onRouteChange={setRoute} />
-        </main>
-      </div>
-    </div>
+    <Router>
+      <PortfolioProvider>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route
+            path="/*"
+            element={
+              <div className="app-root">
+                <Sidebar />
+                <div className="app-main">
+                  <Topbar />
+                  <main className="app-content">
+                    <Routes>
+                      <Route path="/" element={<DashboardPage />} />
+                      <Route path="/accounts" element={<AccountsPage />} />
+                      <Route path="/transactions" element={<TransactionsPage />} />
+                      <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                  </main>
+                </div>
+              </div>
+            }
+          />
+        </Routes>
+      </PortfolioProvider>
+    </Router>
   );
 }
 
