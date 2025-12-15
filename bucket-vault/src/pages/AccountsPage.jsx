@@ -14,6 +14,8 @@ function AccountsPage() {
   useEffect(() => {
     if (selectedPortfolio) {
       fetchAccounts();
+    } else {
+      setLoading(false);
     }
   }, [selectedPortfolio]);
 
@@ -39,6 +41,7 @@ function AccountsPage() {
     }
   };
   if (loading) return <div className="page"><p>Loading accounts...</p></div>;
+  if (!selectedPortfolio) return <div className="page"><p className="auth-error">Please select a portfolio first.</p></div>;
   if (error) return <div className="page"><p className="auth-error">{error}</p></div>;
 
   return (

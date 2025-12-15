@@ -28,9 +28,12 @@ function PortfolioSelector() {
         const data = await res.json();
         setPortfolios(data);
         console.log('Fetched portfolios:', data);
-        // Auto-select first portfolio if available
-        if (data.length > 0 && !selectedPortfolio) {
-          setSelectedPortfolio(data[0].id);
+        // Auto-select first portfolio if current one is not in the list
+        if (data.length > 0) {
+          const currentExists = data.find((p) => p.id === selectedPortfolio);
+          if (!currentExists) {
+            setSelectedPortfolio(data[0].id);
+          }
         }
       }
     } catch (err) {
@@ -40,8 +43,8 @@ function PortfolioSelector() {
     }
   };
 
-  const handlePortfolioChange = (e) => {
-    setSelectedPortfolio(e.target.value);
+  const handlePortfolioChange = (value) => {
+    setSelectedPortfolio(parseInt(value));
   };
 
   return (
@@ -105,7 +108,6 @@ function PortfolioSelector() {
         portfolio={portfolios.find((p) => p.id === parseInt(selectedPortfolio))}
         onClose={() => setIsDeleteModalOpen(false)}
         onSuccess={() => {
-          setSelectedPortfolio('');
           fetchPortfolios();
           setIsDeleteModalOpen(false);
         }}

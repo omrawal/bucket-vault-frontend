@@ -13,8 +13,9 @@ export const API_URLS = {
 
   // Account endpoints
   get_all_accounts: `${API_BASE}/get-all-accounts/`,
-  // transactions: `${API_BASE}/transactions/`,
+  get_all_transactions: `${API_BASE}/get-all-transactions/`,
   create_account: `${API_BASE}/create-account/`,
+  create_transaction: `${API_BASE}/create-transaction/`,
   get_account_types: `${API_BASE}/get-account-types/`,
 
   get_account_categories: `${API_BASE}/get-account-categories/`,
