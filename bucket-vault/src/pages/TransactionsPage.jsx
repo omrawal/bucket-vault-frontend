@@ -64,7 +64,7 @@ function TransactionsPage() {
               <th>Date</th>
               <th>Account</th>
               <th>Type</th>
-              <th className="text-right">Amount (₹)</th>
+              <th>Amount (₹)</th>
               <th>Note</th>
             </tr>
           </thead>
@@ -81,7 +81,7 @@ function TransactionsPage() {
                   <td>{t.date}</td>
                   <td>{t.account}</td>
                   <td>{t.type}</td>
-                  <td className="text-right">
+                  <td>
                     {parseFloat(t.amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                   <td>{t.note}</td>

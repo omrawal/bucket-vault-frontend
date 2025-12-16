@@ -7,21 +7,31 @@ import Button from './Button.jsx';
 function CreateTransactionModal({ isOpen, onClose, onSuccess }) {
   const { selectedPortfolio } = usePortfolio();
   const [accounts, setAccounts] = useState([]);
+  const [transactionTypes, setTransactionTypes] = useState([]);
+  const [transactionCategories, setTransactionCategories] = useState([]);
+  const [transactionSubcategories, setTransactionSubcategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const [formData, setFormData] = useState({
+  const formDefaults = {
     date: new Date().toISOString().split('T')[0],
     account_id: '',
-    type: 'Debit',
+    type: '',
+    category: '',
+    subcategory: '',
     amount: '',
     note: '',
-  });
+  }
+
+  const [formData, setFormData] = useState(formDefaults);
 
   useEffect(() => {
     if (isOpen && selectedPortfolio) {
       fetchAccounts();
+      fetchTransactionType();
+      fetchTransactionCategory();
+      fetchTransactionSubCategory();
     }
   }, [isOpen, selectedPortfolio]);
 
@@ -45,6 +55,67 @@ function CreateTransactionModal({ isOpen, onClose, onSuccess }) {
       setLoading(false);
     }
   };
+  const fetchTransactionType = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({ portfolio_id: selectedPortfolio });
+      const res = await fetch(`${API_URLS.get_transaction_types}?${params}`, {
+        credentials: 'include',
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        console.log('Fetched transaction types:', data);
+        setTransactionTypes(data);
+      } else {
+        setError('Failed to load transaction types.');
+      }
+    } catch (err) {
+      setError('Unable to fetch transaction types.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  const fetchTransactionCategory = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({ portfolio_id: selectedPortfolio });
+      const res = await fetch(`${API_URLS.get_transaction_categories}?${params}`, {
+        credentials: 'include',
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setTransactionCategories(data);
+      } else {
+        setError('Failed to load transaction categories.');
+      }
+    } catch (err) {
+      setError('Unable to fetch transaction categories.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  const fetchTransactionSubCategory = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({ portfolio_id: selectedPortfolio });
+      const res = await fetch(`${API_URLS.get_transaction_subcategories}?${params}`, {
+        credentials: 'include',
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setTransactionSubcategories(data);
+      } else {
+        setError('Failed to load transaction subcategories.');
+      }
+    } catch (err) {
+      setError('Unable to fetch transaction subcategories.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (name, value) => {
     if (name === 'amount') {
@@ -63,6 +134,7 @@ function CreateTransactionModal({ isOpen, onClose, onSuccess }) {
     e.preventDefault();
     setError('');
     setSubmitting(true);
+    console.log('Submitting transaction with data:', formData);
 
     try {
       const res = await fetch(API_URLS.create_transaction, {
@@ -74,6 +146,8 @@ function CreateTransactionModal({ isOpen, onClose, onSuccess }) {
           account_id: parseInt(formData.account_id),
           date: formData.date,
           type: formData.type,
+          category: formData.category,
+          subcategory: formData.subcategory,
           amount: parseFloat(formData.amount),
           note: formData.note,
         }),
@@ -82,13 +156,7 @@ function CreateTransactionModal({ isOpen, onClose, onSuccess }) {
       if (res.ok) {
         onSuccess();
         onClose();
-        setFormData({
-          date: new Date().toISOString().split('T')[0],
-          account_id: '',
-          type: 'Debit',
-          amount: '',
-          note: '',
-        });
+        setFormData(formDefaults);
       } else {
         setError('Failed to create transaction.');
       }
@@ -125,70 +193,51 @@ function CreateTransactionModal({ isOpen, onClose, onSuccess }) {
                 required
               />
             </div>
+            <FormField
+              type="select"
+              name="account_id"
+              label="Account"
+              options={accounts.map((acc) => ({ label: acc.name, value: acc.id }))}
+              value={formData.account_id}
+              onChange={(val) =>
+                setFormData((prev) => ({ ...prev, account_id: val }))
+              }
+              required
+            />
 
-            <div className="form-group">
-              <label htmlFor="account_id" className="form-label">Account</label>
-              <select
-                id="account_id"
-                className="form-input"
-                name="account_id"
-                value={formData.account_id}
-                onChange={(e) => handleChange('account_id', e.target.value)}
-                required
-              >
-                <option value="">Select account</option>
-                {accounts.map((acc) => (
-                  <option key={acc.id} value={acc.id}>
-                    {acc.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="type" className="form-label">Transaction Type</label>
-              <select
-                id="type"
-                className="form-input"
-                name="type"
-                value={formData.type}
-                onChange={(e) => handleChange('type', e.target.value)}
-                required
-              >
-                <option value="Debit">Debit</option>
-                <option value="Credit">Credit</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="type" className="form-label">Category</label>
-              <select
-                id="type"
-                className="form-input"
-                name="type"
-                value={formData.type}
-                onChange={(e) => handleChange('type', e.target.value)}
-                required
-              >
-                <option value="Debit">Debit</option>
-                <option value="Credit">Credit</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="type" className="form-label">Transaction Type</label>
-              <select
-                id="type"
-                className="form-input"
-                name="type"
-                value={formData.type}
-                onChange={(e) => handleChange('type', e.target.value)}
-                required
-              >
-                <option value="Debit">Debit</option>
-                <option value="Credit">Credit</option>
-              </select>
-            </div>
+            <FormField
+              type="select"
+              name="type"
+              label="Transaction Type"
+              options={transactionTypes.map((transaction) => ({ label: transaction.name, value: transaction.id }))}
+              value={formData.type}
+              onChange={(val) =>
+                setFormData((prev) => ({ ...prev, type: val }))
+              }
+              required
+            />
+            <FormField
+              type="select"
+              name="category"
+              label="Transaction Category"
+              options={transactionCategories.map((category) => ({ label: category.name, value: category.id }))}
+              value={formData.category}
+              onChange={(val) =>
+                setFormData((prev) => ({ ...prev, category: val }))
+              }
+              required
+            />
+            <FormField
+              type="select"
+              name="subcategory"
+              label="Transaction Sub-Category"
+              options={transactionSubcategories.map((subcategory) => ({ label: subcategory.name, value: subcategory.id }))}
+              value={formData.subcategory}
+              onChange={(val) =>
+                setFormData((prev) => ({ ...prev, subcategory: val }))
+              }
+              required
+            />
 
             <div className="form-group">
               <label htmlFor="amount" className="form-label">Amount</label>

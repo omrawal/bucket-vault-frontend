@@ -82,7 +82,9 @@ function FormField({
           disabled={disabled}
           {...commonEvents}
         >
-          {/* <option value="">{placeholder || ''}</option> */}
+          <option value="" disabled>
+            {placeholder || ``}
+          </option>
           {normalized.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
