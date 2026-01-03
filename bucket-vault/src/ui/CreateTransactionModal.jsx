@@ -3,6 +3,8 @@ import { API_URLS } from '../api/urls.js';
 import { usePortfolio } from '../context/PortfolioContext.jsx';
 import FormField from './FormField.jsx';
 import Button from './Button.jsx';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 function CreateTransactionModal({ isOpen, onClose, onSuccess }) {
   const { selectedPortfolio } = usePortfolio();
@@ -136,6 +138,11 @@ function CreateTransactionModal({ isOpen, onClose, onSuccess }) {
     setSubmitting(true);
     console.log('Submitting transaction with data:', formData);
 
+    // Convert Date to YYYY-MM-DD format with 00:00:00 time
+    const dateObj = new Date(formData.date);
+    dateObj.setHours(0, 0, 0, 0);
+    const dateString = dateObj.toISOString().split('T')[0]; // YYYY-MM-DD
+
     try {
       const res = await fetch(API_URLS.create_transaction, {
         method: 'POST',
@@ -144,7 +151,7 @@ function CreateTransactionModal({ isOpen, onClose, onSuccess }) {
         body: JSON.stringify({
           portfolio_id: selectedPortfolio,
           account_id: parseInt(formData.account_id),
-          date: formData.date,
+          date: dateString,
           type: formData.type,
           category: formData.category,
           subcategory: formData.subcategory,
@@ -183,14 +190,15 @@ function CreateTransactionModal({ isOpen, onClose, onSuccess }) {
           <form onSubmit={handleSubmit} className="modal-body">
             <div className="form-group">
               <label htmlFor="date" className="form-label">Date</label>
-              <input
+              <DatePicker
                 id="date"
+                selected={formData.date}
+                onChange={(date) => handleChange('date', date)}
+                dateFormat="dd/MM/yyyy"
                 className="form-input"
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={(e) => handleChange('date', e.target.value)}
+                placeholderText="Select date"
                 required
+                maxDate={new Date()}
               />
             </div>
             <FormField

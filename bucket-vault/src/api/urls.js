@@ -10,6 +10,7 @@ export const API_URLS = {
   get_portfolio_list: `${API_BASE}/get-portfolio-list/`,
   create_portfolio: `${API_BASE}/create-portfolio/`,
   delete_portfolio: `${API_BASE}/delete-portfolio/`,
+  get_total_networth: `${API_BASE}/get-total-networth/`,
 
   // Account endpoints
   get_all_accounts: `${API_BASE}/get-all-accounts/`,

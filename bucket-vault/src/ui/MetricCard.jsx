@@ -4,7 +4,7 @@ function MetricCard({ label, value, prefix }) {
     <div className="panel metric-card">
       <span className="metric-label">{label}</span>
       <span className="metric-value">
-        {prefix} {value.toLocaleString('en-IN')}
+        {prefix} {value}
       </span>
     </div>
   );
