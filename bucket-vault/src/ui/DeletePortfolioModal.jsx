@@ -18,6 +18,7 @@ function DeletePortfolioModal({ isOpen, portfolio, onClose, onSuccess }) {
       const res = await apiClient.delete(`${API_URLS.delete_portfolio}${portfolio.id}/`);
         onSuccess();
         onClose();
+        
     } catch (err) {
       setError('Unable to reach server.');
     } finally {

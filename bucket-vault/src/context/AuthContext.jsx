@@ -1,3 +1,4 @@
+// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import apiClient from '../api/client.js';
 
@@ -8,7 +9,6 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Verify token on mount
     verifyToken();
   }, []);
 
@@ -21,14 +21,24 @@ export function AuthProvider({ children }) {
     }
 
     try {
-      // Verify token with backend (requires adding this endpoint)
-      const response = await apiClient.get('/api/auth/verify/');
+      // ✅ Verify token with backend
+      const response = await apiClient.get('/api/finance/auth/verify/');
       setUser(response.data.user);
     } catch (error) {
-      // Token invalid, try refresh (handled by interceptor)
-      // If refresh fails, interceptor redirects to login
       console.error('Token verification failed:', error);
-      logout();
+
+      // Don't logout on verification failure during dev (HMR)
+      // Only logout if token is actually invalid (401)
+      if (error.response?.status === 401) {
+        logout();
+      } else {
+        // Network error or other issue - keep user logged in
+        // Optionally set a fallback user from localStorage
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        }
+      }
     } finally {
       setLoading(false);
     }
@@ -37,6 +47,7 @@ export function AuthProvider({ children }) {
   const login = async (accessToken, refreshToken, userData) => {
     localStorage.setItem('access_token', accessToken);
     localStorage.setItem('refresh_token', refreshToken);
+    localStorage.setItem('user', JSON.stringify(userData)); // Store user data
     setUser(userData);
   };
 

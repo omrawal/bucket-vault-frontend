@@ -25,8 +25,7 @@ function TransactionsPage() {
       setLoading(true);
       const params = new URLSearchParams({ portfolio_id: selectedPortfolio });
       const res = await apiClient.get(`${API_URLS.get_all_transactions}?${params}`);
-
-      const data = await res.json();
+      const data = await res.data;
       setTransactions(data);
     } catch (err) {
     setError('Unable to reach server.');

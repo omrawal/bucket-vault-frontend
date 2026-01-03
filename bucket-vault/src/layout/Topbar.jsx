@@ -1,5 +1,6 @@
 import React from 'react';
 import PortfolioSelector from './PortfolioSelector.jsx';
+import ProfileDropdown from '../ui/ProfileDropdown.jsx';
 
 function Topbar() {
   return (
@@ -9,7 +10,7 @@ function Topbar() {
         <PortfolioSelector />
       </div>
       <div className="topbar-right">
-        <span className="topbar-user">Hello, Om</span>
+        <ProfileDropdown />
       </div>
     </header>
   );

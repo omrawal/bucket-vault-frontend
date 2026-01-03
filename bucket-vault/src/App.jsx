@@ -11,6 +11,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { PortfolioProvider } from './context/PortfolioContext.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import './styles.css';
+import ProfilePage from './pages/ProfilePage.jsx';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
                           <Route path="/" element={<DashboardPage />} />
                           <Route path="/accounts" element={<AccountsPage />} />
                           <Route path="/transactions" element={<TransactionsPage />} />
+                          <Route path="/profile" element={<ProfilePage />} />
                           <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
                       </main>

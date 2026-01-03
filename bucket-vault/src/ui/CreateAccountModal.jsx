@@ -38,25 +38,20 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
       setLoading(true);
       const portfolioId = selectedPortfolio || '';
       const params = new URLSearchParams({ portfolio_id: portfolioId });
+
       const [typesRes, categoriesRes, bucketsRes] = await Promise.all([
-        fetch(`${API_URLS.get_account_types}?${params}`, { credentials: 'include' }),
-        fetch(`${API_URLS.get_account_categories}?${params}`, { credentials: 'include' }),
-        fetch(`${API_URLS.get_bucket_types}?${params}`, { credentials: 'include' }),
+        apiClient.get(`${API_URLS.get_account_types}?${params}`),
+        apiClient.get(`${API_URLS.get_account_categories}?${params}`),
+        apiClient.get(`${API_URLS.get_bucket_types}?${params}`),
       ]);
 
-      if (typesRes.ok && categoriesRes.ok && bucketsRes.ok) {
-        const typesData = await typesRes.json();
-        const categoriesData = await categoriesRes.json();
-        const bucketsData = await bucketsRes.json();
+      setAccountTypes(typesRes.data);
+      setCategories(categoriesRes.data);
+      setBuckets(bucketsRes.data);
 
-        setAccountTypes(typesData);
-        setCategories(categoriesData);
-        setBuckets(bucketsData);
-      } else {
-        setError('Failed to load form data.');
-      }
     } catch (err) {
-      setError('Unable to fetch form data.');
+      console.error('Failed to fetch dropdown data:', err);
+      setError(err.response?.data?.detail || 'Unable to fetch form data.');
     } finally {
       setLoading(false);
     }
@@ -69,26 +64,24 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
     }
 
     try {
-      const res = await apiClient.post(API_URLS.create_account_type, {
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ name: newType }),
+      // ✅ Axios syntax - data directly as second parameter
+      const response = await apiClient.post(API_URLS.create_account_type, {
+        name: newType,
+        portfolio_id: selectedPortfolio, // Add this if needed
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        setAccountTypes([...accountTypes, data]);
-        setFormData((prev) => ({ ...prev, account_type_id: data.id }));
-        setNewType('');
-        setShowNewType(false);
-        setError('');
-      } else {
-        setError('Failed to create account type.');
-      }
+      const data = response.data;
+      setAccountTypes([...accountTypes, data]);
+      setFormData((prev) => ({ ...prev, account_type_id: data.id }));
+      setNewType('');
+      setShowNewType(false);
+      setError('');
     } catch (err) {
-      setError('Unable to reach server.');
+      console.error('Failed to create account type:', err);
+      setError(err.response?.data?.detail || 'Unable to create account type.');
     }
   };
+
 
   const createNewCategory = async () => {
     if (!newCategory.trim()) {
@@ -102,29 +95,25 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
     }
 
     try {
-      const res = await apiClient.post(API_URLS.create_category, {
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          name: newCategory,
-          account_type_id: parseInt(formData.account_type_id),
-        }),
+      // ✅ Axios syntax
+      const response = await apiClient.post(API_URLS.create_category, {
+        name: newCategory,
+        account_type_id: parseInt(formData.account_type_id),
+        portfolio_id: selectedPortfolio, // Add this if needed
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        setCategories([...categories, data]);
-        setFormData((prev) => ({ ...prev, category_id: data.id }));
-        setNewCategory('');
-        setShowNewCategory(false);
-        setError('');
-      } else {
-        setError('Failed to create category.');
-      }
+      const data = response.data;
+      setCategories([...categories, data]);
+      setFormData((prev) => ({ ...prev, category_id: data.id }));
+      setNewCategory('');
+      setShowNewCategory(false);
+      setError('');
     } catch (err) {
-      setError('Unable to reach server.');
+      console.error('Failed to create category:', err);
+      setError(err.response?.data?.detail || 'Unable to create category.');
     }
   };
+
 
   const createNewBucket = async () => {
     if (!newBucket.trim()) {
@@ -133,26 +122,24 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
     }
 
     try {
-      const res = await apiClient.post(API_URLS.create_bucket, {
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ name: newBucket }),
+      // ✅ Axios syntax
+      const response = await apiClient.post(API_URLS.create_bucket, {
+        name: newBucket,
+        portfolio_id: selectedPortfolio, // Add this if needed
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        setBuckets([...buckets, data]);
-        setFormData((prev) => ({ ...prev, bucket_id: data.id }));
-        setNewBucket('');
-        setShowNewBucket(false);
-        setError('');
-      } else {
-        setError('Failed to create bucket.');
-      }
+      const data = response.data;
+      setBuckets([...buckets, data]);
+      setFormData((prev) => ({ ...prev, bucket_id: data.id }));
+      setNewBucket('');
+      setShowNewBucket(false);
+      setError('');
     } catch (err) {
-      setError('Unable to reach server.');
+      console.error('Failed to create bucket:', err);
+      setError(err.response?.data?.detail || 'Unable to create bucket.');
     }
   };
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;

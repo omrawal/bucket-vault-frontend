@@ -3,6 +3,7 @@ import AllocationCard from '../ui/AllocationCard.jsx';
 import React, { use, useEffect, useState } from 'react';
 import { usePortfolio } from '../context/PortfolioContext.jsx';
 import { API_URLS } from '../api/urls.js';
+import apiClient from '../api/client.js';
 
 function DashboardPage() {
   const { selectedPortfolio } = usePortfolio();
