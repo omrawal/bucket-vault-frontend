@@ -69,8 +69,7 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
     }
 
     try {
-      const res = await fetch(API_URLS.create_account_type, {
-        method: 'POST',
+      const res = await apiClient.post(API_URLS.create_account_type, {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ name: newType }),
@@ -103,8 +102,7 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
     }
 
     try {
-      const res = await fetch(API_URLS.create_category, {
-        method: 'POST',
+      const res = await apiClient.post(API_URLS.create_category, {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
@@ -135,8 +133,7 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
     }
 
     try {
-      const res = await fetch(API_URLS.create_bucket, {
-        method: 'POST',
+      const res = await apiClient.post(API_URLS.create_bucket, {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ name: newBucket }),
@@ -171,8 +168,7 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
     setSubmitting(true);
 
     try {
-      const res = await fetch(API_URLS.create_account, {
-        method: 'POST',
+      const res = await apiClient.post(API_URLS.create_account, {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({

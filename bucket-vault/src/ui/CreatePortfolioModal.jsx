@@ -3,6 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import { API_URLS } from '../api/urls.js';
 import FormField from './FormField.jsx';
 import Button from './Button.jsx';
+import apiClient from '../api/client.js';
 
 function CreatePortfolioModal({ isOpen, onClose, onSuccess }) {
   const [formData, setFormData] = useState({
@@ -26,22 +27,14 @@ function CreatePortfolioModal({ isOpen, onClose, onSuccess }) {
     setSubmitting(true);
 
     try {
-      const res = await fetch(API_URLS.create_portfolio, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(formData),
-      });
+      const res = await apiClient.post(API_URLS.create_portfolio, formData);
 
-      if (res.ok) {
-        onSuccess();
-        setFormData({ name: '', description: '' });
-        onClose();
-      } else {
-        setError('Failed to create portfolio.');
-      }
+      onSuccess();
+      setFormData({ name: '', description: '' });
+      onClose();
     } catch (err) {
-      setError('Unable to reach server.');
+      console.error('Failed to create portfolio:', err);
+      setError(err.response?.data?.detail || 'Failed to create portfolio.');
     } finally {
       setSubmitting(false);
     }
@@ -84,7 +77,7 @@ function CreatePortfolioModal({ isOpen, onClose, onSuccess }) {
               onChange={(val) =>
                 setFormData((prev) => ({ ...prev, description: val }))
               }
-              // placeholder="Add a description for this portfolio"
+            // placeholder="Add a description for this portfolio"
             />
           </div>
 

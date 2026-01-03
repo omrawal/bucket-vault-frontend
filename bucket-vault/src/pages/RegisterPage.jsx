@@ -1,18 +1,25 @@
 import React from 'react';
 import { useState } from 'react';
+import { useNavigate, Navigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
+import apiClient from '../api/client.js';
 import AuthLayout from '../layout/AuthLayout.jsx';
 
-const API_BASE =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-
-function RegisterPage({ onRouteChange }) {
+function RegisterPage() {
+  const { login, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
-  const [email, setEmail]       = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirm, setConfirm]   = useState('');
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState('');
-  const [success, setSuccess]   = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  // Redirect if already logged in
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,34 +37,23 @@ function RegisterPage({ onRouteChange }) {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/finance/auth/signup/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username,
-          email,
-          password,
-        }),
+      const response = await apiClient.post('/api/finance/auth/signup/', {
+        username,
+        email,
+        password,
       });
 
-      if (res.ok || res.status === 201) {
-        setSuccess('Account created. You can now log in.');
-        setUsername('');
-        setEmail('');
-        setPassword('');
-        setConfirm('');
-        // Optionally auto-switch to login after short delay
-        setTimeout(() => onRouteChange('login'), 1200);
-      } else {
-        const data = await res.json().catch(() => null);
-        setError(
-          data?.detail ||
-            data?.error ||
-            'Could not create account.'
-        );
-      }
+      const { access, refresh, user } = response.data;
+      
+      // Auto-login after signup
+      await login(access, refresh, user);
+      navigate('/');
     } catch (err) {
-      setError('Unable to reach server.');
+      setError(
+        err.response?.data?.detail ||
+        err.response?.data?.error ||
+        'Could not create account.'
+      );
     } finally {
       setLoading(false);
     }
@@ -125,13 +121,9 @@ function RegisterPage({ onRouteChange }) {
 
         <p className="auth-switch">
           Already have an account?{' '}
-          <button
-            type="button"
-            className="auth-link"
-            onClick={() => onRouteChange('login')}
-          >
+          <Link to="/login" className="auth-link">
             Login
-          </button>
+          </Link>
         </p>
       </form>
     </AuthLayout>

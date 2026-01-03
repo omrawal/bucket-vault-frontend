@@ -5,6 +5,7 @@ import CreatePortfolioModal from '../ui/CreatePortfolioModal.jsx';
 import DeletePortfolioModal from '../ui/DeletePortfolioModal.jsx';
 import FormField from '../ui/FormField.jsx';
 import Button from '../ui/Button.jsx';
+import apiClient from '../api/client.js';
 
 function PortfolioSelector() {
   const { selectedPortfolio, setSelectedPortfolio } = usePortfolio();
@@ -20,20 +21,16 @@ function PortfolioSelector() {
   const fetchPortfolios = async () => {
     try {
       setLoading(true);
-      const res = await fetch(API_URLS.get_portfolio_list, {
-        credentials: 'include',
-      });
+      const res = await apiClient.get(API_URLS.get_portfolio_list);
 
-      if (res.ok) {
-        const data = await res.json();
-        setPortfolios(data);
-        console.log('Fetched portfolios:', data);
-        // Auto-select first portfolio if current one is not in the list
-        if (data.length > 0) {
-          const currentExists = data.find((p) => p.id === selectedPortfolio);
-          if (!currentExists) {
-            setSelectedPortfolio(data[0].id);
-          }
+      const data = await res.data
+      setPortfolios(data);
+      console.log('Fetched portfolios:', data);
+      // Auto-select first portfolio if current one is not in the list
+      if (data.length > 0) {
+        const currentExists = data.find((p) => p.id === selectedPortfolio);
+        if (!currentExists) {
+          setSelectedPortfolio(data[0].id);
         }
       }
     } catch (err) {

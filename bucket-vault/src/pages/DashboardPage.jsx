@@ -18,19 +18,13 @@ function DashboardPage() {
     const portfolioId = selectedPortfolio || '';
     const params = new URLSearchParams({ portfolio_id: portfolioId });
     try {
-      const totalNetworthResponse = await fetch(`${API_URLS.get_total_networth}?${params}`);
-      if (totalNetworthResponse.ok) {
-        const data = await totalNetworthResponse.json();
-        setTotalNetworth(data.total_networth);
-        setGrowthTotal(data.growth_total);
-        setSafetyTotal(data.safety_total);
-        setGrowthPct(Math.round((data.growth_total / data.total_networth) * 100));
-        setSafetyPct(Math.round((data.safety_total / data.total_networth) * 100));
-
-      } else {
-        console.error('Failed to fetch total networth');
-        return 0;
-      }
+      const totalNetworthResponse = await apiClient.get(`${API_URLS.get_total_networth}?${params}`);
+      const data = await totalNetworthResponse.data;
+      setTotalNetworth(data.total_networth);
+      setGrowthTotal(data.growth_total);
+      setSafetyTotal(data.safety_total);
+      setGrowthPct(Math.round((data.growth_total / data.total_networth) * 100));
+      setSafetyPct(Math.round((data.safety_total / data.total_networth) * 100));
     } catch (error) {
       console.error('Error fetching total networth:', error);
       return 0;
