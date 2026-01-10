@@ -1,4 +1,4 @@
-import { FiPieChart, FiLayers, FiList } from 'react-icons/fi';
+import { FiPieChart, FiLayers, FiList, FiBarChart2 } from 'react-icons/fi';
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -39,6 +39,13 @@ function Sidebar() {
         >
           <FiList className="nav-icon" />
           <span>Transactions</span>
+        </button>
+        <button
+          className={`nav-item ${isActive('/statistics') ? 'active' : ''}`}
+          onClick={() => navigate('/statistics')}
+        >
+          <FiBarChart2 className="nav-icon" />
+          <span>Statistics</span>
         </button>
       </nav>
     </aside>

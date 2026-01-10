@@ -5,6 +5,7 @@ import FormField from './FormField.jsx';
 import Button from './Button.jsx';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import apiClient from '../api/client.js';
 
 function CreateTransactionModal({ isOpen, onClose, onSuccess }) {
   const { selectedPortfolio } = usePortfolio();
@@ -41,16 +42,8 @@ function CreateTransactionModal({ isOpen, onClose, onSuccess }) {
     try {
       setLoading(true);
       const params = new URLSearchParams({ portfolio_id: selectedPortfolio });
-      const res = await fetch(`${API_URLS.get_all_accounts}?${params}`, {
-        credentials: 'include',
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setAccounts(data);
-      } else {
-        setError('Failed to load accounts.');
-      }
+      const res = await apiClient.get(`${API_URLS.get_all_accounts}?${params}`);
+      setAccounts(res.data);
     } catch (err) {
       setError('Unable to fetch accounts.');
     } finally {
@@ -61,17 +54,10 @@ function CreateTransactionModal({ isOpen, onClose, onSuccess }) {
     try {
       setLoading(true);
       const params = new URLSearchParams({ portfolio_id: selectedPortfolio });
-      const res = await fetch(`${API_URLS.get_transaction_types}?${params}`, {
-        credentials: 'include',
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        console.log('Fetched transaction types:', data);
-        setTransactionTypes(data);
-      } else {
-        setError('Failed to load transaction types.');
-      }
+      const res = await apiClient.get(`${API_URLS.get_transaction_types}?${params}`);
+      const data = await res.data;
+      console.log('Fetched transaction types:', data);
+      setTransactionTypes(data);
     } catch (err) {
       setError('Unable to fetch transaction types.');
     } finally {
@@ -82,16 +68,9 @@ function CreateTransactionModal({ isOpen, onClose, onSuccess }) {
     try {
       setLoading(true);
       const params = new URLSearchParams({ portfolio_id: selectedPortfolio });
-      const res = await fetch(`${API_URLS.get_transaction_categories}?${params}`, {
-        credentials: 'include',
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setTransactionCategories(data);
-      } else {
-        setError('Failed to load transaction categories.');
-      }
+      const res = await apiClient.get(`${API_URLS.get_transaction_categories}?${params}`);
+      const data = await res.data;
+      setTransactionCategories(data);
     } catch (err) {
       setError('Unable to fetch transaction categories.');
     } finally {
@@ -102,16 +81,9 @@ function CreateTransactionModal({ isOpen, onClose, onSuccess }) {
     try {
       setLoading(true);
       const params = new URLSearchParams({ portfolio_id: selectedPortfolio });
-      const res = await fetch(`${API_URLS.get_transaction_subcategories}?${params}`, {
-        credentials: 'include',
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setTransactionSubcategories(data);
-      } else {
-        setError('Failed to load transaction subcategories.');
-      }
+      const res = await apiClient.get(`${API_URLS.get_transaction_subcategories}?${params}`);
+      const data = await res.data;
+      setTransactionSubcategories(data);
     } catch (err) {
       setError('Unable to fetch transaction subcategories.');
     } finally {
@@ -144,29 +116,19 @@ function CreateTransactionModal({ isOpen, onClose, onSuccess }) {
     const dateString = dateObj.toISOString().split('T')[0]; // YYYY-MM-DD
 
     try {
-      const res = await fetch(API_URLS.create_transaction, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          portfolio_id: selectedPortfolio,
-          account_id: parseInt(formData.account_id),
-          date: dateString,
-          type: formData.type,
-          category: formData.category,
-          subcategory: formData.subcategory,
-          amount: parseFloat(formData.amount),
-          note: formData.note,
-        }),
+      const res = await apiClient.post(API_URLS.create_transaction, {
+        portfolio_id: selectedPortfolio,
+        account_id: parseInt(formData.account_id),
+        date: dateString,
+        type: formData.type,
+        category: formData.category,
+        subcategory: formData.subcategory,
+        amount: parseFloat(formData.amount),
+        note: formData.note,
       });
-
-      if (res.ok) {
-        onSuccess();
-        onClose();
-        setFormData(formDefaults);
-      } else {
-        setError('Failed to create transaction.');
-      }
+      onSuccess();
+      onClose();
+      setFormData(formDefaults);
     } catch (err) {
       setError('Unable to reach server.');
     } finally {

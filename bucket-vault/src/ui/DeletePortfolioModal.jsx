@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import { API_URLS } from '../api/urls.js';
 import Button from './Button.jsx';
+import apiClient from '../api/client.js';
 
 function DeletePortfolioModal({ isOpen, portfolio, onClose, onSuccess }) {
   const [deleting, setDeleting] = useState(false);
@@ -14,17 +15,10 @@ function DeletePortfolioModal({ isOpen, portfolio, onClose, onSuccess }) {
     setDeleting(true);
 
     try {
-      const res = await fetch(`${API_URLS.delete_portfolio}${portfolio.id}/`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-
-      if (res.ok) {
+      const res = await apiClient.delete(`${API_URLS.delete_portfolio}${portfolio.id}/`);
         onSuccess();
         onClose();
-      } else {
-        setError('Failed to delete portfolio.');
-      }
+        
     } catch (err) {
       setError('Unable to reach server.');
     } finally {

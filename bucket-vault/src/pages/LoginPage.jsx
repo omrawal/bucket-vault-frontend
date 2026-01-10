@@ -1,13 +1,22 @@
 import React from 'react';
 import { useState } from 'react';
 import AuthLayout from '../layout/AuthLayout.jsx';
-import { API_URLS } from '../api/urls.js';
+import { useAuth } from '../context/AuthContext.jsx';
+import apiClient from '../api/client.js';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 
 function LoginPage({ onRouteChange }) {
+  const { login, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // Redirect if already logged in
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,24 +24,22 @@ function LoginPage({ onRouteChange }) {
     setLoading(true);
 
     try {
-      const res = await fetch(API_URLS.login, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        credentials: 'include',
-        body: new URLSearchParams({
-          username,
-          password,
-        }),
+      const response = await apiClient.post('/api/token/', {
+        username,
+        password,
       });
 
-      if (res.ok) {
-        // after successful login go to dashboard
-        onRouteChange('dashboard');
-      } else {
-        setError('Invalid username or password.');
-      }
+      const { access, refresh } = response.data;
+      
+      // Get user info
+      const userResponse = await apiClient.get('/api/finance/auth/verify/', {
+        headers: { Authorization: `Bearer ${access}` }
+      });
+
+      await login(access, refresh, userResponse.data.user);
+      navigate('/');
     } catch (err) {
-      setError('Unable to reach server.');
+      setError(err.response?.data?.detail || 'Invalid credentials.');
     } finally {
       setLoading(false);
     }
@@ -77,13 +84,9 @@ function LoginPage({ onRouteChange }) {
 
         <p className="auth-switch">
           Don&apos;t have an account?{' '}
-          <button
-            type="button"
-            className="auth-link"
-            onClick={() => onRouteChange('register')}
-          >
+          <Link to="/register" className="auth-link">
             Sign up
-          </button>
+          </Link>
         </p>
       </form>
     </AuthLayout>

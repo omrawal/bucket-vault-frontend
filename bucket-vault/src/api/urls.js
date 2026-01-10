@@ -29,4 +29,12 @@ export const API_URLS = {
   create_account_type: `${API_BASE}/account-types/create/`,
   create_category: `${API_BASE}/categories/create/`,
   create_bucket: `${API_BASE}/buckets/create/`,
+
+  // Statistics endpoints
+  get_metrics: `${API_BASE}/get-metrics/`,
+  get_networth_history: `${API_BASE}/get-networth-history/`,
+  get_income_expense_trend: `${API_BASE}/get-income-expense-trend/`,
+  get_category_spending: `${API_BASE}/get-category-spending/`,
+  get_category_trends: `${API_BASE}/get-category-trends/`,
+  get_account_balances: `${API_BASE}/get-account-balances/`,
 };

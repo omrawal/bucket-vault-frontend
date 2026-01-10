@@ -3,6 +3,7 @@ import { API_URLS } from '../api/urls.js';
 import { usePortfolio } from '../context/PortfolioContext.jsx';
 import CreateAccountModal from '../ui/CreateAccountModal.jsx';
 import Button from '../ui/Button.jsx';
+import apiClient from '../api/client.js';
 
 function AccountsPage() {
   const { selectedPortfolio } = usePortfolio();
@@ -23,17 +24,8 @@ function AccountsPage() {
     try {
       setLoading(true);
       const params = new URLSearchParams({ portfolio_id: selectedPortfolio });
-      const res = await fetch(`${API_URLS.get_all_accounts}?${params}`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setAccounts(data);
-      } else {
-        setError('Failed to fetch accounts.');
-      }
+      const res = await apiClient(`${API_URLS.get_all_accounts}?${params}`);
+        setAccounts(res.data);
     } catch (err) {
       setError('Unable to reach server.');
     } finally {
