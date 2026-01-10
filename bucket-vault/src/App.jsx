@@ -12,6 +12,7 @@ import { PortfolioProvider } from './context/PortfolioContext.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import './styles.css';
 import ProfilePage from './pages/ProfilePage.jsx';
+import StatisticsPage from './pages/StatisticsPage.jsx';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
                           <Route path="/accounts" element={<AccountsPage />} />
                           <Route path="/transactions" element={<TransactionsPage />} />
                           <Route path="/profile" element={<ProfilePage />} />
+                          <Route path="/statistics" element={<StatisticsPage />} />
                           <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
                       </main>

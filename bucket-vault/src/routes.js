@@ -32,6 +32,11 @@ export const ROUTES = {
         label: 'Transactions',
         component: TransactionsPage,
     },
+    statistics: {
+        key: 'statistics',
+        label: 'Statistics',
+        component: StatisticsPage,
+    },
 };
 
 // Optionally export as array (useful for Sidebar)
