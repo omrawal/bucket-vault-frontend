@@ -235,7 +235,7 @@ function StatisticsPage() {
               <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Bar dataKey="income" name="Income" fill={COLORS.success} radius={[8, 8, 0, 0]} />
-              <Bar dataKey="expenses" name="Expenses" fill={COLORS.danger} radius={[8, 8, 0, 0]} />
+              <Bar dataKey="expense" name="Expenses" fill={COLORS.danger} radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
