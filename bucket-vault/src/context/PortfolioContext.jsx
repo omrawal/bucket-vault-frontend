@@ -1,12 +1,27 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import apiClient from '../api/client.js';
 
+const STORAGE_KEY = 'selectedPortfolioId';
 const PortfolioContext = createContext();
 
 export function PortfolioProvider({ children }) {
-  const [selectedPortfolio, setSelectedPortfolio] = useState(null);
   const [portfolios, setPortfolios] = useState([]);
+  const [selectedPortfolio, setSelectedPortfolio] = useState(() => {
+    // Load from sessionStorage on initial mount
+    const stored = sessionStorage.getItem(STORAGE_KEY);
+    return stored ? parseInt(stored) : null;
+  });
   const [loading, setLoading] = useState(true);
+
+  const handleSetSelectedPortfolio = (portfolioId) => {
+    setSelectedPortfolio(portfolioId);
+    // Save to sessionStorage
+    if (portfolioId) {
+      sessionStorage.setItem(STORAGE_KEY, String(portfolioId));
+    } else {
+      sessionStorage.removeItem(STORAGE_KEY);
+    }
+  };
 
   useEffect(() => {
     fetchPortfolios();
@@ -35,16 +50,14 @@ export function PortfolioProvider({ children }) {
     }
   };
 
-  const value = {
-    selectedPortfolio,
-    setSelectedPortfolio,
-    portfolios,
-    loading,
-    refreshPortfolios: fetchPortfolios, 
-  };
-
   return (
-    <PortfolioContext.Provider value={value}>
+    <PortfolioContext.Provider value={{
+        selectedPortfolio,
+        setSelectedPortfolio: handleSetSelectedPortfolio,
+        portfolios,
+        loading,
+        fetchPortfolios,
+      }}>
       {children}
     </PortfolioContext.Provider>
   );

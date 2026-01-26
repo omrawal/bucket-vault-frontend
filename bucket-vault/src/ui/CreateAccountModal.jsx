@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { API_URLS } from '../api/urls.js';
 import { usePortfolio } from '../context/PortfolioContext.jsx';
 import Button from './Button.jsx';
+import apiClient from '../api/client.js';
 
 function CreateAccountModal({ isOpen, onClose, onSuccess }) {
   const { selectedPortfolio } = usePortfolio();
@@ -32,6 +33,9 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
       fetchDropdownData();
     }
   }, [isOpen]);
+  useEffect(() => {
+    fetchDropdownData();
+  }, []);
 
   const fetchDropdownData = async () => {
     try {
@@ -154,18 +158,14 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
     setError('');
     setSubmitting(true);
 
+    const payload = {
+      portfolio_id: selectedPortfolio,
+      name: formData.name,
+      category_id: parseInt(formData.category_id),
+      bucket_id: parseInt(formData.bucket_id),
+    };
     try {
-      const res = await apiClient.post(API_URLS.create_account, {
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          portfolio_id: selectedPortfolio,
-          name: formData.name,
-          category_id: parseInt(formData.category_id),
-          bucket_id: parseInt(formData.bucket_id),
-        }),
-      });
-
+      const res = await apiClient.post(API_URLS.create_account, payload);
       if (res.ok) {
         onSuccess();
         onClose();

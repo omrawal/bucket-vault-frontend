@@ -57,6 +57,7 @@ return (
             <th>Date</th>
             <th>Account</th>
             <th>Type</th>
+            <th>Category</th>
             <th>Amount (₹)</th>
             <th>Note</th>
           </tr>
@@ -74,6 +75,7 @@ return (
                 <td>{t.date}</td>
                 <td>{t.account}</td>
                 <td>{t.type}</td>
+                <td>{t.category}</td>
                 <td>
                   {parseFloat(t.amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </td>
