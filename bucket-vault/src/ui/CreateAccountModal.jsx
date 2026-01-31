@@ -166,12 +166,13 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }) {
     };
     try {
       const res = await apiClient.post(API_URLS.create_account, payload);
-      if (res.ok) {
+      if (res.status === 200 || res.status === 201) {
         onSuccess();
         onClose();
         setFormData({ name: '', account_type_id: '', category_id: '', bucket_id: '' });
       } else {
         setError('Failed to create account.');
+        console.log('Account creation error:', res);
       }
     } catch (err) {
       setError('Unable to reach server.');
