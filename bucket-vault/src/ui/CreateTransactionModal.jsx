@@ -135,7 +135,7 @@ function CreateTransactionModal({ isOpen, onClose, onSuccess }) {
           account_id: parseInt(formData.account_id),
           date: dateString,
           type: transactionType === 'Income' ? 'Credit' : 'Debit',
-          category: parseInt(formData.category),
+          category: formData.category,
           subcategory: parseInt(formData.subcategory),
           amount: parseFloat(formData.amount),
           note: formData.note,
