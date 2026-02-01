@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/finance';
+const API_BASE = import.meta.env.VITE_API_URL + 'api/finance/' || 'http://localhost:8000/api/finance';
 
 export const API_URLS = {
   // Auth endpoints
