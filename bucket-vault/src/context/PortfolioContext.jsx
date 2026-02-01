@@ -6,16 +6,21 @@ const PortfolioContext = createContext();
 
 export function PortfolioProvider({ children }) {
   const [portfolios, setPortfolios] = useState([]);
-  const [selectedPortfolio, setSelectedPortfolio] = useState(() => {
-    // Load from sessionStorage on initial mount
-    const stored = sessionStorage.getItem(STORAGE_KEY);
-    return stored ? parseInt(stored) : null;
-  });
+  const [selectedPortfolio, setSelectedPortfolio] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Load from sessionStorage on mount (client-side only)
+  useEffect(() => {
+    const stored = sessionStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      setSelectedPortfolio(parseInt(stored));
+    }
+    setIsHydrated(true);
+  }, []);
 
   const handleSetSelectedPortfolio = (portfolioId) => {
     setSelectedPortfolio(portfolioId);
-    // Save to sessionStorage
     if (portfolioId) {
       sessionStorage.setItem(STORAGE_KEY, String(portfolioId));
     } else {
@@ -24,8 +29,11 @@ export function PortfolioProvider({ children }) {
   };
 
   useEffect(() => {
-    fetchPortfolios();
-  }, []);
+    if (isHydrated) {
+      fetchPortfolios();
+    }
+  }, [isHydrated]);
+
 
   const fetchPortfolios = async () => {
     try {
